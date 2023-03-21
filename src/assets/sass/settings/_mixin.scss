@@ -1,0 +1,52 @@
+%defaultButton{
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+  }
+  
+  //mixin ini buat template
+  @mixin defaultButton {
+    background: red;
+    border: 1px solid red;
+    border-radius: 10px;
+    padding: 10px;
+  }
+  //nanti ini diaktifinnya pake @include defaultButton;
+  .btn {
+    &-danger {
+      @include defaultButton;
+      background: red;
+    }
+    &-green {
+      @include defaultButton;
+      background: green;
+    }
+  }
+  
+  //bisa juga dibuat model begini
+  @mixin blockEl($block: "", $element: "") {
+    .#{$block} {
+      &-#{element} {
+        @content;
+      }
+    }
+  }
+  
+  @include blockEl('btn', 'danger'){
+    @include defaultButton;
+    background: red;
+  }
+  
+  //penggunaan extend:
+  @include blockEl('btn', 'primary'){
+    @extend %defaultButton;
+    background: blue;
+  }
+  @include blockEl('btn', 'warning'){
+    @extend %defaultButton;
+    background: yellow;
+  }
+  @include blockEl('btn', 'danger'){
+    @extend %defaultButton;
+    background: red;
+  }

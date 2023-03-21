@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique @db.VarChar(255)
+  username String   @db.VarChar(255)
+  password String   @db.VarChar(255)
+  createAt DateTime @default(now()) @db.Timestamp(0)
+  updateAt DateTime @default(now()) @db.Timestamp(0)
+  salt     String   @db.VarChar(255)
+
+  @@index([id], map: "index_user_id")
+}
+
+model product {
+  id          Int                @id @default(autoincrement())
+  name        String
+  price       BigInt?            @default(0)
+  createAt    DateTime           @default(now()) @db.Timestamp(0)
+  updateAt    DateTime           @default(now()) @db.Timestamp(0)
+  deleteAt    DateTime?
+  image       product_images[]
+  taxonomy    product_taxonomy[]
+  description String             @db.LongText
+}
+
+model product_images {
+  id         Int     @id @default(autoincrement())
+  productId  Int
+  filename   String?
+  prefix     String?
+  destintion String?
+  product    product @relation(fields: [productId], references: [id])
+
+  @@index([id], map: "index_product_images_id")
+  @@index([productId], map: "index_product_images_productId_fk")
+}
+
+model product_taxonomy {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  taxonomyId Int
+  product    product  @relation(fields: [productId], references: [id])
+  taxonomy   taxonomy @relation(fields: [taxonomyId], references: [id])
+
+  @@index([id], map: "index_product_taxonomy_id")
+  @@index([productId], map: "index_product_taxonomy_productId_fk")
+  @@index([taxonomyId], map: "index_product_taxonomy_taxonomyId_fk")
+}
+
+model taxonomy {
+  id       Int                @id @default(autoincrement())
+  name     String?
+  createAt DateTime           @default(now()) @db.Timestamp(0)
+  updateAt DateTime           @default(now()) @db.Timestamp(0)
+  deleteAt DateTime?
+  product  product_taxonomy[]
+}
